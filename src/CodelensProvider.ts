@@ -15,8 +15,10 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
     
     constructor() {
-        this.regex = /"(([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)"/g;
-        this.regexGauge = /<[^>]*value="([^"]*)"[^>]*gauge="([^"]*)"[^>]*>/gm;
+//        this.regex = /"(([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)"/g;
+        this.regex = /(?<![0-9a-zA-z])(([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)(?![0-9a-zA-z])/g;
+
+        this.regexGauge = /<[^>]*value *= *"([^"]*)"[^>]*gauge *= *"([^"]*)"[^>]*>/gm;
         this.unitsSI.value(2);
         vscode.workspace.onDidChangeConfiguration((_) => {
             this._onDidChangeCodeLenses.fire();
@@ -61,10 +63,10 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                         comment = "unknown unit"
                     }
                     let command = {
-                        title: comment,
-                        tooltip: comment,
-                        command: "tclb-editor.codelensAction",
-                        arguments: ["Argument 1", false]
+                        title: comment//,
+//                        tooltip: comment,
+//                        command: "tclb-editor.codelensAction",
+//                        arguments: ["Argument 1", false]
                     };
                     this.codeLenses.push(new vscode.CodeLens(range, command));
                 }

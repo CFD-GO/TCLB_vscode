@@ -63,7 +63,6 @@ export class unitSet {
 		this.unitTable["d"]  = this.value(Math.atan(1.0)*4.0/180.)!;
 		this.unitTable["%"]  = this.value(1./100.)!;
 		this.unitTable["An"] = this.value(6.022*100000000000000000000000.)!;
-		console.log(JSON.stringify(this.unitTable));
 	}
 	public readText(x : string) : unitValue | null {
 		let unitRE : string = "(" + Object.keys(this.unitTable).reduce(function(x: string, y: string) : string { return(x + "|" + y)}) + ")";
@@ -78,11 +77,9 @@ export class unitSet {
 			}
 			let units1S : string | null = match[4];
 			let units2S : string | null = match[8];
-			console.log(JSON.stringify([valS,units1S,units2S]));
 			if (units1S) {
 				let regexp = RegExp(unitRE+"([0-9]*)","g");
 				while ((match = regexp.exec(units1S)) !== null) {
-					console.log(match[1]);
 					let unitval : unitValue = this.unitTable[match[1]].clone();
 					let pow : number = 1;
 					if (match[2]) pow = parseInt(match[2]);
@@ -93,7 +90,6 @@ export class unitSet {
 			if(units2S) {
 				let regexp = RegExp(unitRE+"([0-9]*)","g");
 				while ((match = regexp.exec(units2S)) !== null) {
-					console.log(match[1]);
 					let unitval : unitValue = this.unitTable[match[1]].clone();
 					let pow : number = 1;
 					if (match[2]) pow = parseInt(match[2]);
