@@ -1,9 +1,3 @@
-import { kMaxLength } from "buffer";
-
-//type unitExp = [number,number,number,number,number,number,number];
-
-//import * as math from math;
-
 let numberRE : string = "([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?";
 
 type unitExp = number[];

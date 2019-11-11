@@ -63,10 +63,10 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                         comment = "unknown unit"
                     }
                     let command = {
-                        title: comment//,
-//                        tooltip: comment,
-//                        command: "tclb-editor.codelensAction",
-//                        arguments: ["Argument 1", false]
+                        title: comment,
+                        tooltip: comment,
+                        command: "tclb-editor.codelensAction",
+                        arguments: ["Argument 1", false]
                     };
                     this.codeLenses.push(new vscode.CodeLens(range, command));
                 }
