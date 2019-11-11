@@ -13,15 +13,15 @@ export function activate(context: ExtensionContext) {
 
     languages.registerCodeLensProvider("*", codelensProvider);
 
-    commands.registerCommand("codelens-sample.enableCodeLens", () => {
-        workspace.getConfiguration("codelens-sample").update("enableCodeLens", true, true);
+    commands.registerCommand("tclb-editor.enableCodeLens", () => {
+        workspace.getConfiguration("tclb-editor").update("enableCodeLens", true, true);
     });
 
-    commands.registerCommand("codelens-sample.disableCodeLens", () => {
-        workspace.getConfiguration("codelens-sample").update("enableCodeLens", false, true);
+    commands.registerCommand("tclb-editor.disableCodeLens", () => {
+        workspace.getConfiguration("tclb-editor").update("enableCodeLens", false, true);
     });
 
-    commands.registerCommand("codelens-sample.codelensAction", (args) => {
+    commands.registerCommand("tclb-editor.codelensAction", (args) => {
         window.showInformationMessage(`CodeLens action clicked with args=${args}`);
     });
 }

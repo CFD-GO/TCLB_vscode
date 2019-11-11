@@ -1,9 +1,9 @@
 {
-    "name": "codelens-sample",
-    "displayName": "CodeLens Sample",
-    "description": "Samples for VS Code's CodeLens API",
+    "name": "tclb-editor",
+    "displayName": "TCLB editor extension",
+    "description": "This package helps edit XML config files for TCLB",
     "version": "0.0.1",
-    "publisher": "ms-vscode",
+    "publisher": "cfd-go",
     "engines": {
         "vscode": "^1.26.0"
     },
@@ -18,18 +18,18 @@
         "commands": [
             {
                 "title": "Enable CodeLens",
-                "command": "codelens-sample.enableCodeLens",
+                "command": "tclb-editor.enableCodeLens",
                 "category": "CodeLens Sample"
             },
             {
                 "title": "Disable Codelens",
-                "command": "codelens-sample.disableCodeLens",
+                "command": "tclb-editor.disableCodeLens",
                 "category": "CodeLens Sample"
             }
         ],
         "configuration": {
             "properties": {
-                "codelens-sample.enableCodeLens": {
+                "tclb-editor.enableCodeLens": {
                     "type": "boolean",
                     "default": true
                 }
@@ -43,10 +43,10 @@
         "watch": "tsc -watch -p ./"
     },
     "devDependencies": {
-        "@types/node": "10.3.6",
-        "@types/vscode": "^1.26.0",
-        "tslint": "5.10.0",
-        "typescript": "2.9.2",
-        "vscode": "^1.1.21"
+        "@types/node": "12.12.7",
+        "@types/vscode": "1.40.0",
+        "tslint": "5.20.1",
+        "typescript": "3.7.2",
+        "vscode": "1.1.36"
     }
 }

@@ -1,123 +1,172 @@
+import { kMaxLength } from "buffer";
 
 //type unitExp = [number,number,number,number,number,number,number];
 
-import * as math from math;
+//import * as math from math;
 
+let numberRE : string = "([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?";
 
 type unitExp = number[];
+let unitNames : string[] = ["m","s","kg","K", "x", "y", "z", "A", "t"];
 
 export class unitValue {
-	public value : number = 0;
-	public units : unitExp = [0,0,0,0,0,0,0];
+	public value : number;
+	public units : unitExp;
 	constructor(value: number, units: unitExp) {
 		this.value = value;
 		this.units = units;
 	}
-
-}
-
-let unitTable : {[key: string] : unitValue } = {
-	'mm': new unitValue( 1e-3, [ 1,  0, 0, 0, 0, 0, 0 ] ),
-	'cm': new unitValue( 1e-2, [ 1,  0, 0, 0, 0, 0, 0 ] ),
-	'ms': new unitValue( 1e-3, [ 0,  1, 0, 0, 0, 0, 0 ] ),
-	'mg': new unitValue( 1e-6, [ 0,  0, 1, 0, 0, 0, 0 ] ),
-	 'm': new unitValue( 1,    [ 1,  0, 0, 0, 0, 0, 0 ] ),
-	'km': new unitValue( 1e3,  [ 1,  0, 0, 0, 0, 0, 0 ] ),
-	 's': new unitValue( 1,    [ 0,  1, 0, 0, 0, 0, 0 ] ),
-	'kg': new unitValue( 1,    [ 0,  0, 1, 0, 0, 0, 0 ] ),
-	 'g': new unitValue( 1e-3, [ 0,  0, 1, 0, 0, 0, 0 ] ),
-	'Pa': new unitValue( 1,    [-1, -2, 1, 0, 0, 0, 0 ] ),
-	 'N': new unitValue( 1,    [ 1, -2, 1, 0, 0, 0, 0 ] ),
-	 'J': new unitValue( 1,    [ 2, -2, 1, 0, 0, 0, 0 ] ),
-	 'K': new unitValue( 1,    [ 0,  0, 0, 1, 0, 0, 0 ] ),
-	 'x': new unitValue( 1,    [ 0,  0, 0, 0, 1, 0, 0 ] ),
-	 'y': new unitValue( 1,    [ 0,  0, 0, 0, 0, 1, 0 ] ),
-	 'z': new unitValue( 1,    [ 0,  0, 0, 0, 0, 0, 1 ] )
-};
-
-let numberRE : string = "([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?";
-let unitRE : string = "(" + Object.keys(unitTable).reduce(function(x: string, y: string) : string { return(x + "|" + y)}) + ")";
-let unitPowerRE : string = unitRE + "([0-9]*)";
-let unitsRE : string = "(" + unitPowerRE + ")*(/((" + unitPowerRE + ")+))?";
-let numberUnitsRE: string = "(" + numberRE + ")" + unitsRE;
-
-console.log(numberUnitsRE);
-
-function pr(x : string) {
-    let regexp = RegExp(numberUnitsRE);
-    let match = regexp.exec(x);
-    console.log(JSON.stringify([match[0], match[1], match[4],match[8]));
-}
-pr("12.12e5ms2/kgms")
-pr("12e5ms2/kgms")
-pr("12.12ms2/kgms")
-pr("12.12e5m/kgms")
-pr("12.12e5m2s2kg5/kg1m2s3")
-pr("12.12e5ms2")
-pr("12.12e5/s")
-
-let unitScale : unitExp = [ 0, 0, 0, 0, 0, 0, 0 ];
-
-function getUnitless( x : unitValue ) : number {
-	let val: number = 0;
-	for (let i : number = 0; i < x.units.length; i++) {
-		val = val + x.units[i] * unitScale[i];
+	public pow(p : number) {
+		this.units = this.units.map(function(v:number) { return v*p; });
+		this.value = Math.pow(this.value, p);
 	}
-	val = Math.exp(-val) * x.value;
-	return val;
-}
-
-function getUnitlessS( x : unitValue ) : string {
-	return getUnitless(x).toExponential(3);
-}
-
-function parseUnit(text : string) {
-	let regexp : RegExp = /^([-+]?[0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?)([^-+]*)([+-].*)?$/;
-	let match : RegExpExecArray | null = regexp.exec(text);
-	console.log(match);
-	let val : number;
-	let unit : string;
-	val = parseFloat(match[1]);
-	let full : unitValue = new unitValue( val, [ 0,  0, 0, 0, 0, 0, 0 ] );
-	unit = match[4];
-	t = unit;
-	w = "";
-	mp = 1;
-	er = "";
-	while (t != "") {
-	 a = unitRegExp.exec(t);
-	 if (a == undefined) break;
-	 s = a[1];
-	 if (s == "/") {
-	  if (mp < 0) break;
-	  if (a[2] != "") break;
-	  mp = -1;
-	  if (w == "") {
-		  w = "<sup>1</sup>&frasl;<sub>"
-	  } else {
-		  w = "<sup>" + w + "</sup>&frasl;<sub>"
-	  }
-	 } else {
-	  p = 1;
-	  u = a[1];
-	  w = w + a[1];
-	  if (a[2] != "") { 
-	   p = parseInt(a[2]);
-	   w = w + "<sup>" + p + "</sup>";
-	  }
-	  u = unitTable[u];
-	  p = p * mp;
-	  full.value = full.value * Math.pow(u.value,p);
-	  full.unit = numeric.add(full.unit, numeric.mul(u.unit,p));
-	 }
-	 t = a[3];
+	public mult(other : unitValue) {
+		this.units = this.units.map(function(v:number,i:number) { return v + other.units[i]; });
+		this.value = this.value * other.value;
 	}
-	if (mp < 0) w = w + "</sub>";
-	if (t != "") {
-		w = w + '<span style="color:red">' + t + '</span>';
-		full.value = NaN;
-		return { value: full, text: text, html: val + " " + w };
-	} else {
-		return { value: full, text: text, html: val + " " + w };
+	public clone() : unitValue {
+		return new unitValue(this.value, this.units);
+	}
+}
+
+export class unitSet {
+	private unitTable : {[key: string] : unitValue } = {};
+	public one : unitValue;
+	public value(val : number) {
+		let units : unitExp = unitNames.map(function(j) { return 0; });
+		return new unitValue(val, units)
+	}
+	constructor() {
+		for (let i of unitNames) {
+			let units : unitExp = unitNames.map(function(j) { return 0; });
+			units = unitNames.map(function(j) { if (i == j) return 1; return 0; });
+			this.unitTable[i] = new unitValue(1,units);
+		}
+		this.one = this.value(1);
+		this.unitTable["N"]  = this.readText("1kgm/s2")!;
+		this.unitTable["Pa"] = this.readText("1N/m2")!;
+		this.unitTable["J"]  = this.readText("1Nm")!;
+		this.unitTable["W"]  = this.readText("1J/s")!;
+		this.unitTable["V"]  = this.readText("1kgm2/t3/A")!;
+		this.unitTable["C"]  = this.readText("1tA")!;
+		this.unitTable["nm"] = this.readText("1e-9m")!; 
+		this.unitTable["um"] = this.readText("1e-6m")!;
+		this.unitTable["mm"] = this.readText("1e-3m")!;
+		this.unitTable["cm"] = this.readText("1e-2m")!;
+		this.unitTable["km"] = this.readText("1e+3m")!;
+		this.unitTable["h"]  = this.readText("3600s")!;
+		this.unitTable["ns"] = this.readText("1e-9s")!;
+		this.unitTable["us"] = this.readText("1e-6s")!;
+		this.unitTable["ms"] = this.readText("1e-3s")!;
+		this.unitTable["g"]  = this.readText("1e-3kg")!;
+		this.unitTable["mg"] = this.readText("1e-6kg")!;
+		this.unitTable["d"]  = this.value(Math.atan(1.0)*4.0/180.)!;
+		this.unitTable["%"]  = this.value(1./100.)!;
+		this.unitTable["An"] = this.value(6.022*100000000000000000000000.)!;
+		console.log(JSON.stringify(this.unitTable));
+	}
+	public readText(x : string) : unitValue | null {
+		let unitRE : string = "(" + Object.keys(this.unitTable).reduce(function(x: string, y: string) : string { return(x + "|" + y)}) + ")";
+		let unitPowerRE : string = unitRE + "[0-9]*";
+		let numberUnitsRE: string = "^(" + numberRE + ")((" + unitPowerRE + ")*)(/((" + unitPowerRE + ")+))?$";
+		let ret : unitValue = this.value(1);
+		let match = RegExp(numberUnitsRE).exec(x);
+		if (match) {
+			let valS : string | null = match[1];
+			if (valS) {
+				ret = this.value(parseFloat(valS));
+			}
+			let units1S : string | null = match[4];
+			let units2S : string | null = match[8];
+			console.log(JSON.stringify([valS,units1S,units2S]));
+			if (units1S) {
+				let regexp = RegExp(unitRE+"([0-9]*)","g");
+				while ((match = regexp.exec(units1S)) !== null) {
+					console.log(match[1]);
+					let unitval : unitValue = this.unitTable[match[1]].clone();
+					let pow : number = 1;
+					if (match[2]) pow = parseInt(match[2]);
+					unitval.pow(pow);
+					ret.mult(unitval);
+				}
+			}
+			if(units2S) {
+				let regexp = RegExp(unitRE+"([0-9]*)","g");
+				while ((match = regexp.exec(units2S)) !== null) {
+					console.log(match[1]);
+					let unitval : unitValue = this.unitTable[match[1]].clone();
+					let pow : number = 1;
+					if (match[2]) pow = parseInt(match[2]);
+					unitval.pow(-pow);
+					ret.mult(unitval);
+				}
+			}
+			return ret;
+		} else {
+			return null;
+		}
+	}
+}
+
+export class unitGauge {
+	public unitScales : number[];
+	public solved : boolean;
+	public singular : boolean;
+	private gauges : unitValue[] = [];
+	constructor() {
+		this.solved = false;
+		this.singular = false;
+		this.unitScales = unitNames.map(function(x) { return 0; });
+	}
+	public add(x : unitValue, y : unitValue) {
+		let z = x.clone();
+		z.pow(-1);
+		z.mult(y);
+		this.gauges.push(z);
+	}
+	public solve() {
+		this.solved = true;
+		let rhs : number[] = [];
+		let mat : unitExp[] = [];
+		for (let z of this.gauges) {
+			rhs.push(Math.log(z.value));
+			mat.push(z.units);
+		}
+		if (rhs.length == 0) return "solved";
+		for (let i = 0; i < mat.length; i++) {
+			let j : number;
+			for (j = 0; j < mat[i].length; j++) {
+				if (mat[i][j] != 0) break;
+			}
+			if (j == mat[i].length) { this.singular = true; return; }
+			for (let k = 0; k < mat.length; k++) if (k != j) {
+				let ratio = mat[k][j] / mat[i][j];
+				rhs[k] = rhs[k] - ratio * rhs[i];
+				for (let p = 0; p < mat[i].length; p++) {
+					mat[k][p] = mat[k][p] - ratio * mat[i][p];
+				}
+			}
+		}
+		this.unitScales = unitNames.map(function(x) { return 0; });
+		for (let i = 0; i < mat.length; i++) {
+			let j : number;
+			for (j = 0; j < mat[i].length; j++) {
+				if (mat[i][j] != 0) break;
+			}
+			if (j == mat[i].length) { this.singular = true; return; }
+			this.unitScales[j] = rhs[j] / mat[i][j];
+			for (j = j+1; j < mat[i].length; j++) {
+				if (mat[i][j] != 0) { this.singular = true; return; }
+			}
+		}
+		return;
+	}
+	public unitless(x : unitValue | null) : number | null {
+		if (!x) return null;
+		if (! this.solved) this.solve();
+		if (this.singular) return null;
+		let u : number = 0;
+		for (let j = 0; j < x.units.length; j++) u = u + x.units[j] * this.unitScales[j];
+		return x.value * Math.exp(-u);
 	}
 }
