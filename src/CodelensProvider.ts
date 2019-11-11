@@ -13,11 +13,10 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     private unitsSI : units.unitSet = new units.unitSet();
     private gaugeSI : units.unitGauge = new units.unitGauge();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
-    private k : number;
+    
     constructor() {
         this.regex = /"(([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)"/g;
         this.regexGauge = /<[^>]*value="([^"]*)"[^>]*gauge="([^"]*)"[^>]*>/gm;
-        this.k = 0;
         this.unitsSI.value(2);
         vscode.workspace.onDidChangeConfiguration((_) => {
             this._onDidChangeCodeLenses.fire();
@@ -32,7 +31,6 @@ export class CodelensProvider implements vscode.CodeLensProvider {
             const regexGauge = new RegExp(this.regexGauge);
             const text = document.getText();
             let matches;
-            this.k = 0;
             this.gaugeSI = new units.unitGauge();
             while ((matches = regexGauge.exec(text)) !== null) {
                 let val1 : units.unitValue | null = this.unitsSI.readText(matches[1]);
@@ -40,7 +38,6 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                 let val2 : units.unitValue | null = this.unitsSI.readText(matches[2]);
                 if (! val2) continue;
                 this.gaugeSI.add(val1,val2);
-                this.k++;
             }
             this.gaugeSI.solve();
             while ((matches = regex.exec(text)) !== null) {
