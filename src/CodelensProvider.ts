@@ -15,7 +15,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
     private k : number;
     constructor() {
-        this.regex = /"(([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?[a-z/0-9]*)"/g;
+        this.regex = /"(([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)"/g;
         this.regexGauge = /<[^>]*value="([^"]*)"[^>]*gauge="([^"]*)"[^>]*>/gm;
         this.k = 0;
         this.unitsSI.value(2);
@@ -49,12 +49,23 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                 let position = new vscode.Position(line.lineNumber, indexOf);
                 let range = document.getWordRangeAtPosition(position, new RegExp(this.regex));
                 if (range) {
+                    let comment : string = "";
                     let val : string = matches[1];
                     let unitval : units.unitValue | null = this.unitsSI.readText(val);
-                    let unitless : number | null = this.gaugeSI.unitless(unitval);
+                    if (unitval) {
+                        comment = val + " = ";
+                        if (this.gaugeSI.singular) {
+                            comment = comment + "signual gauge";
+                        } else {
+                            let unitless : number = this.gaugeSI.unitless(unitval)!;
+                            comment = comment + unitless.toPrecision(3);
+                        }
+                    } else {
+                        comment = "unknown unit"
+                    }
                     let command = {
-                        title: val + " = " + unitless,
-                        tooltip: "Tooltip provided by sample extension",
+                        title: comment,
+                        tooltip: comment,
                         command: "tclb-editor.codelensAction",
                         arguments: ["Argument 1", false]
                     };
