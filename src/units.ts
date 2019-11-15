@@ -122,6 +122,7 @@ export class unitGauge {
 			rhs.push(Math.log(z.value));
 			mat.push(z.units);
 		}
+		console.log(JSON.stringify(mat));
 		if (rhs.length == 0) return "solved";
 		for (let i = 0; i < mat.length; i++) {
 			let j : number;
@@ -129,7 +130,7 @@ export class unitGauge {
 				if (mat[i][j] != 0) break;
 			}
 			if (j == mat[i].length) { this.singular = true; return; }
-			for (let k = 0; k < mat.length; k++) if (k != j) {
+			for (let k = 0; k < mat.length; k++) if (k != i) {
 				let ratio = mat[k][j] / mat[i][j];
 				rhs[k] = rhs[k] - ratio * rhs[i];
 				for (let p = 0; p < mat[i].length; p++) {
@@ -137,6 +138,7 @@ export class unitGauge {
 				}
 			}
 		}
+		console.log(JSON.stringify(mat));
 		this.unitScales = unitNames.map(function(x) { return 0; });
 		for (let i = 0; i < mat.length; i++) {
 			let j : number;
@@ -144,7 +146,7 @@ export class unitGauge {
 				if (mat[i][j] != 0) break;
 			}
 			if (j == mat[i].length) { this.singular = true; return; }
-			this.unitScales[j] = rhs[j] / mat[i][j];
+			this.unitScales[j] = rhs[i] / mat[i][j];
 			for (j = j+1; j < mat[i].length; j++) {
 				if (mat[i][j] != 0) { this.singular = true; return; }
 			}
