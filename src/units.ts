@@ -1,4 +1,4 @@
-let numberRE : string = "([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?";
+let numberRE : string = "([0-9]*[.])?[0-9]+([eE][+\\-]?[0-9]+)?";
 
 type unitExp = number[];
 let unitNames : string[] = ["m","s","kg","K", "x", "y", "z", "A", "t"];
@@ -63,9 +63,11 @@ export class unitSet {
 		let unitPowerRE : string = unitRE + "[0-9]*";
 		let numberUnitsRE: string = "^(" + numberRE + ")((" + unitPowerRE + ")*)(/((" + unitPowerRE + ")+))?$";
 		let ret : unitValue = this.value(1);
+		console.log(JSON.stringify(x));
 		let match = RegExp(numberUnitsRE).exec(x);
 		if (match) {
 			let valS : string | null = match[1];
+			console.log(JSON.stringify(match));
 			if (valS) {
 				ret = this.value(parseFloat(valS));
 			}
@@ -76,6 +78,7 @@ export class unitSet {
 				while ((match = regexp.exec(units1S)) !== null) {
 					let unitval : unitValue = this.unitTable[match[1]].clone();
 					let pow : number = 1;
+					console.log(JSON.stringify(match));
 					if (match[2]) pow = parseInt(match[2]);
 					unitval.pow(pow);
 					ret.mult(unitval);
@@ -86,6 +89,7 @@ export class unitSet {
 				while ((match = regexp.exec(units2S)) !== null) {
 					let unitval : unitValue = this.unitTable[match[1]].clone();
 					let pow : number = 1;
+					console.log(JSON.stringify(match));
 					if (match[2]) pow = parseInt(match[2]);
 					unitval.pow(-pow);
 					ret.mult(unitval);

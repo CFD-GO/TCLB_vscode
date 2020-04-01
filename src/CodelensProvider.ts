@@ -16,7 +16,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     
     constructor() {
 //        this.regex = /"(([0-9]*.)?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)"/g;
-        this.regex = /(?<![0-9a-zA-z])(([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?[a-zA-Z/][a-zA-Z/0-9]*)(?![0-9a-zA-z])/g;
+        this.regex = /(?<![0-9a-zA-Z])(([0-9]*[.])?[0-9]+([eE][+\\-]?[0-9]+)?[a-df-zA-DF-Z/][a-zA-Z/0-9]*)(?![0-9a-zA-Z])/g;
 
         this.regexGauge = /<[^>]*value *= *"([^"]*)"[^>]*gauge *= *"([^"]*)"[^>]*>/gm;
         this.unitsSI.value(2);
