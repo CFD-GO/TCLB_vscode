@@ -6,7 +6,7 @@
     "publisher": "cfd-go",
     "repository": "https://github.com/CFD-GO/TCLB_vscode",
     "engines": {
-        "vscode": "^1.26.0"
+        "vscode": "^1.43.0"
     },
     "categories": [
         "Other"
