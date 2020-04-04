@@ -22,7 +22,7 @@ export function activate(context: ExtensionContext) {
     });
 
     commands.registerCommand("tclb-helper.codelensAction", (args) => {
-        window.showInformationMessage(`CodeLens action clicked with args=${args}`);
+        window.showInformationMessage(args);
     });
 }
 

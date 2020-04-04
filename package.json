@@ -1,6 +1,6 @@
 {
     "name": "tclb-helper",
-    "displayName": "TCLB Helper Sxtension",
+    "displayName": "TCLB Helper Extension",
     "description": "This package helps edit XML config files for TCLB",
     "version": "0.1.0",
     "publisher": "cfd-go",

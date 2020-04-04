@@ -12,6 +12,9 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     private unitsSI : units.unitSet = new units.unitSet();
     private gaugeSI : units.unitGauge = new units.unitGauge();
+    public c_comment() : string {
+        return JSON.stringify(this.gaugeSI);
+    }
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
     
     constructor() {
@@ -48,24 +51,32 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                 let position = new vscode.Position(line.lineNumber, indexOf);
                 let range = document.getWordRangeAtPosition(position, new RegExp(this.regex));
                 if (range) {
-                    let comment : string = "";
+                    let c_title : string = "";
+                    let c_comment : string = "";
+                    let c_message : string = "";
                     let val : string = matches[1];
                     let unitval : units.unitValue | null = this.unitsSI.readText(val);
                     if (unitval) {
                         if (this.gaugeSI.singular) {
-                            comment = val + " - singular gauge matrix";
+                            c_title = val + " = NA (singular)";
+                            c_comment = "Singular gauge matrix";
+                            c_message = "The gauge matrix cannot be solved. Either too many or not enough of gauge units were provided";
                         } else {
                             let unitless : number = this.gaugeSI.unitless(unitval)!;
-                            comment = val + " = " + unitless.toPrecision(3);
+                            c_title = val + " = " + unitless.toPrecision(3);
+                            c_comment = unitless.toString();
+                            c_message = val + " = " + unitless.toString();
                         }
                     } else {
-                        comment = val + " - unknown unit"
+                        c_title = val + " - unknown unit";
+                        c_comment = "Malformed unit: " + val;
+                        c_message = c_comment;
                     }
                     let command = {
-                        title: comment,
-                        tooltip: comment,
+                        title: c_title,
+                        tooltip: c_comment,
                         command: "tclb-helper.codelensAction",
-                        arguments: ["Argument 1", false]
+                        arguments: [c_message]
                     };
                     this.codeLenses.push(new vscode.CodeLens(range, command));
                 }
