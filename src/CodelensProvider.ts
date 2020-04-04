@@ -52,29 +52,30 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                 let range = document.getWordRangeAtPosition(position, new RegExp(this.regex));
                 if (range) {
                     let c_title : string = "";
-                    let c_comment : string = "";
                     let c_message : string = "";
                     let val : string = matches[1];
                     let unitval : units.unitValue | null = this.unitsSI.readText(val);
                     if (unitval) {
                         if (this.gaugeSI.singular) {
                             c_title = val + " = NA (singular)";
-                            c_comment = "Singular gauge matrix";
-                            c_message = "The gauge matrix cannot be solved. Either too many or not enough of gauge units were provided";
+                            c_message = "The gauge matrix cannot be solved.";
                         } else {
-                            let unitless : number = this.gaugeSI.unitless(unitval)!;
-                            c_title = val + " = " + unitless.toPrecision(3);
-                            c_comment = unitless.toString();
-                            c_message = val + " = " + unitless.toString();
+                            let unitless : { value: number, resolved: boolean} = this.gaugeSI.unitless(unitval)!;
+                            if (unitless.resolved) {
+                                c_title = val + " = " + unitless.value.toPrecision(3);
+                                c_message = val + " = " + unitless.value.toString();
+                            } else {
+                                c_title = val + " = " + unitless.value.toPrecision(3) + " (gauge not set)";
+                                c_message = "Gauge not set for some of units used";
+                            }
                         }
                     } else {
                         c_title = val + " - unknown unit";
-                        c_comment = "Malformed unit: " + val;
-                        c_message = c_comment;
+                        c_message = "Malformed unit: " + val;
                     }
                     let command = {
                         title: c_title,
-                        tooltip: c_comment,
+                        tooltip: c_message,
                         command: "tclb-helper.codelensAction",
                         arguments: [c_message]
                     };

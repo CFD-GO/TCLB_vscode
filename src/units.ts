@@ -103,7 +103,7 @@ export class unitSet {
 }
 
 export class unitGauge {
-	public unitScales : number[];
+	public unitScales : (number | null) [];
 	public solved : boolean;
 	public singular : boolean;
 	private gauges : unitValue[] = [];
@@ -143,7 +143,7 @@ export class unitGauge {
 			}
 		}
 		console.log(JSON.stringify(mat));
-		this.unitScales = unitNames.map(function(x) { return 0; });
+		this.unitScales = unitNames.map(function(x) { return null; });
 		for (let i = 0; i < mat.length; i++) {
 			let j : number;
 			for (j = 0; j < mat[i].length; j++) {
@@ -157,12 +157,22 @@ export class unitGauge {
 		}
 		return;
 	}
-	public unitless(x : unitValue | null) : number | null {
+	public unitless(x : unitValue | null) : {value: number, resolved: boolean} | null {
 		if (!x) return null;
 		if (! this.solved) this.solve();
 		if (this.singular) return null;
 		let u : number = 0;
-		for (let j = 0; j < x.units.length; j++) u = u + x.units[j] * this.unitScales[j];
-		return x.value * Math.exp(-u);
+		let res : boolean = true;
+		for (let j = 0; j < x.units.length; j++) {
+			if (x.units[j] != 0) {
+				let us : number | null = this.unitScales[j];
+				if (us) {
+					u = u + x.units[j] * us;
+				} else {
+					res = false
+				}
+			}
+		}
+		return { value: x.value * Math.exp(-u), resolved: res };
 	}
 }
