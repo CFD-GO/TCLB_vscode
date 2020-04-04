@@ -11,17 +11,17 @@ var disposables: Disposable[] = [];
 export function activate(context: ExtensionContext) {
     let codelensProvider = new CodelensProvider();
 
-    languages.registerCodeLensProvider("*", codelensProvider);
+    languages.registerCodeLensProvider({language: "xml"}, codelensProvider);
 
-    commands.registerCommand("tclb-editor.enableCodeLens", () => {
-        workspace.getConfiguration("tclb-editor").update("enableCodeLens", true, true);
+    commands.registerCommand("tclb-helper.enableCodeLens", () => {
+        workspace.getConfiguration("tclb-helper").update("enableCodeLens", true, true);
     });
 
-    commands.registerCommand("tclb-editor.disableCodeLens", () => {
-        workspace.getConfiguration("tclb-editor").update("enableCodeLens", false, true);
+    commands.registerCommand("tclb-helper.disableCodeLens", () => {
+        workspace.getConfiguration("tclb-helper").update("enableCodeLens", false, true);
     });
 
-    commands.registerCommand("tclb-editor.codelensAction", (args) => {
+    commands.registerCommand("tclb-helper.codelensAction", (args) => {
         window.showInformationMessage(`CodeLens action clicked with args=${args}`);
     });
 }

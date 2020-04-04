@@ -27,7 +27,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
-        if (vscode.workspace.getConfiguration("tclb-editor").get("enableCodeLens", true)) {
+        if (vscode.workspace.getConfiguration("tclb-helper").get("enableCodeLens", true)) {
             this.codeLenses = [];
             const regex = new RegExp(this.regex);
             const regexGauge = new RegExp(this.regexGauge);
@@ -52,20 +52,19 @@ export class CodelensProvider implements vscode.CodeLensProvider {
                     let val : string = matches[1];
                     let unitval : units.unitValue | null = this.unitsSI.readText(val);
                     if (unitval) {
-                        comment = val + " = ";
                         if (this.gaugeSI.singular) {
-                            comment = comment + "signual gauge";
+                            comment = val + " - singular gauge matrix";
                         } else {
                             let unitless : number = this.gaugeSI.unitless(unitval)!;
-                            comment = comment + unitless.toPrecision(3);
+                            comment = val + " = " + unitless.toPrecision(3);
                         }
                     } else {
-                        comment = "unknown unit"
+                        comment = val + " - unknown unit"
                     }
                     let command = {
                         title: comment,
                         tooltip: comment,
-                        command: "tclb-editor.codelensAction",
+                        command: "tclb-helper.codelensAction",
                         arguments: ["Argument 1", false]
                     };
                     this.codeLenses.push(new vscode.CodeLens(range, command));
@@ -77,7 +76,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     }
 
     public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
-        if (vscode.workspace.getConfiguration("tclb-editor").get("enableCodeLens", true)) {
+        if (vscode.workspace.getConfiguration("tclb-helper").get("enableCodeLens", true)) {
             return codeLens;
         }
         return null;

@@ -1,8 +1,8 @@
 {
-    "name": "tclb-editor",
-    "displayName": "TCLB editor extension",
+    "name": "tclb-helper",
+    "displayName": "TCLB Helper Sxtension",
     "description": "This package helps edit XML config files for TCLB",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "cfd-go",
     "repository": "https://github.com/CFD-GO/TCLB_vscode",
     "engines": {
@@ -19,18 +19,18 @@
         "commands": [
             {
                 "title": "Enable CodeLens",
-                "command": "tclb-editor.enableCodeLens",
+                "command": "tclb-helper.enableCodeLens",
                 "category": "CodeLens Sample"
             },
             {
                 "title": "Disable Codelens",
-                "command": "tclb-editor.disableCodeLens",
+                "command": "tclb-helper.disableCodeLens",
                 "category": "CodeLens Sample"
             }
         ],
         "configuration": {
             "properties": {
-                "tclb-editor.enableCodeLens": {
+                "tclb-helper.enableCodeLens": {
                     "type": "boolean",
                     "default": true
                 }
